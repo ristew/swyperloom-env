@@ -69,23 +69,28 @@ text, judge JSON parses, reward distribution has variance.
 Restore `max_steps = 200` and relaunch. ~30-60 min on a 3090/4090 for a
 200-step LoRA-rank-16 run at batch 128.
 
-## 7. Merge LoRA + GGUF export
+## 7. Merge LoRA + GGUF export + push to HF Hub
+
+`release.py` automates all three. Install the extras and llama.cpp
+once, then one command:
 
 ```bash
-uv pip install peft transformers
-python - <<'PY'
-from transformers import AutoModelForCausalLM, AutoTokenizer
-from peft import PeftModel
-base = AutoModelForCausalLM.from_pretrained("meta-llama/Llama-3.1-8B")
-merged = PeftModel.from_pretrained(base, "outputs/checkpoints/final").merge_and_unload()
-merged.save_pretrained("swyperloom-merged")
-AutoTokenizer.from_pretrained("meta-llama/Llama-3.1-8B").save_pretrained("swyperloom-merged")
-PY
-
+uv pip install -e ".[release]"
 git clone https://github.com/ggerganov/llama.cpp
-python llama.cpp/convert_hf_to_gguf.py swyperloom-merged \
-  --outfile swyperloom-llama31-8b.gguf --outtype q4_k_m
+
+export HF_TOKEN=hf_...   # needs write scope for the destination repo
+
+uv run python release.py \
+  --adapter outputs/step_200 \
+  --repo-id your-user/swyperloom-llama31-8b \
+  --quant q4_k_m
 ```
+
+Flags worth knowing:
+- `--private` — upload as a private HF repo.
+- `--skip-push` — stop after building the .gguf locally, skip Hub upload.
+- `--no-upload-merged` — ship only the .gguf, not the full merged HF dir.
+- `--quant` — q4_k_m (default, ~4.6GB for 8B), q5_k_m, q8_0, f16, etc.
 
 ## 8. Clean up
 

@@ -95,23 +95,21 @@ See `PRIME_POD.md` for the full runbook (availability check, secrets,
 | `reward` | Main scalar — `(diversity + interestingness + coherence + creativity) / 40`, range `[0.1, 1.0]` |
 | `score_siblings` | Same as `reward` (only one func in the rubric) |
 
-## Release (post-training GGUF export)
+## Release (merge → GGUF → HF Hub)
 
-After a successful training run, the adapter weights are on the pod or
-available via `prime run download`. Merge + convert:
+`release.py` merges the LoRA, converts to GGUF via llama.cpp, and
+pushes to HuggingFace. Run on the pod right after training completes:
 
 ```bash
-uv pip install peft transformers
-python - <<'PY'
-from transformers import AutoModelForCausalLM, AutoTokenizer
-from peft import PeftModel
-base = AutoModelForCausalLM.from_pretrained("meta-llama/Llama-3.1-8B")
-merged = PeftModel.from_pretrained(base, "checkpoints/final").merge_and_unload()
-merged.save_pretrained("swyperloom-merged")
-AutoTokenizer.from_pretrained("meta-llama/Llama-3.1-8B").save_pretrained("swyperloom-merged")
-PY
-
+uv pip install -e ".[release]"
 git clone https://github.com/ggerganov/llama.cpp
-python llama.cpp/convert_hf_to_gguf.py swyperloom-merged \
-  --outfile swyperloom-llama31-8b.gguf --outtype q4_k_m
+export HF_TOKEN=hf_...
+
+uv run python release.py \
+  --adapter outputs/step_200 \
+  --repo-id your-user/swyperloom-llama31-8b \
+  --quant q4_k_m
 ```
+
+See `release.py --help` for flags (`--private`, `--skip-push`,
+`--quant`, `--no-upload-merged`, `--keep-work-dir`).

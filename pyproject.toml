@@ -10,6 +10,16 @@ dependencies = [
     "openai>=1.40",
 ]
 
+[project.optional-dependencies]
+# Installed on the pod right before running `python release.py` to
+# merge the LoRA, convert to GGUF, and push to HuggingFace.
+release = [
+    "peft>=0.10",
+    "transformers>=4.44",
+    "huggingface_hub>=0.24",
+    "torch",
+]
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
