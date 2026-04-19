@@ -11,7 +11,7 @@ max_steps = 200
 seq_len = 512
 
 [model]
-name = "unsloth/Meta-Llama-3.1-8B"
+name = "meta-llama/Llama-3.1-8B"
 
 [orchestrator]
 batch_size = 128

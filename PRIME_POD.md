@@ -55,7 +55,7 @@ from a TOML-referenced secrets file.
 
 ```bash
 export PRIME_API_KEY=...   # Kimi K2 judge via Prime Inference
-export HF_TOKEN=...         # unsloth/Meta-Llama-3.1-8B is gated on HF
+export HF_TOKEN=...         # meta-llama/Llama-3.1-8B is gated on HF
 ```
 
 (If you prefer a file: `source /workspace/simulabra/environments/swyperloom/secrets.env`.)
