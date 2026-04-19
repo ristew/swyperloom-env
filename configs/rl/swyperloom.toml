@@ -1,7 +1,11 @@
-# Pod prime-rl config for Llama-3.1-8B base. Native prime-rl schema
-# (same as `examples/*/rl.toml` in the prime-rl repo). Launch with
-# `uv run rl @ configs/rl/swyperloom.toml` from inside a prime-rl checkout
-# that has this env installed via `uv pip install -e /path/to/this/dir`.
+# 8B prime-rl config for a 2-GPU Prime pod (1 infer + 1 train).
+# Monolithic schema — `rl` auto-splits at launch. Schema matches
+# current prime-rl (post-2026-02 renames: `train.sampling`,
+# `train.env`, `max_completion_tokens`).
+#
+# Launch from inside a prime-rl checkout:
+#   uv run rl @ /path/to/this/toml \
+#     --tokenizer.chat_template /path/to/templates/completion.jinja
 
 max_steps = 200
 seq_len = 512
@@ -13,11 +17,11 @@ name = "meta-llama/Llama-3.1-8B"
 batch_size = 128
 rollouts_per_example = 4
 
-[orchestrator.sampling]
-max_tokens = 12
+[orchestrator.train.sampling]
+max_completion_tokens = 12
 temperature = 0.9
 
-[[orchestrator.env]]
+[[orchestrator.train.env]]
 id = "swyperloom"
 
 [trainer.model.lora]
@@ -30,5 +34,11 @@ target_modules = ["q_proj", "k_proj", "v_proj", "o_proj"]
 lr = 1e-4
 
 [ckpt]
+interval = 100
 
 [inference]
+
+[deployment]
+type = "single_node"
+num_train_gpus = 1
+num_infer_gpus = 1

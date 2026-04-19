@@ -62,22 +62,37 @@ export HF_TOKEN=...         # meta-llama/Llama-3.1-8B is gated on HF
 
 ## 5. Smoke-run 5 steps
 
+On a 2-GPU pod `rl` launches both inference and trainer itself — no
+need for a separate `uv run inference` pane.
+
 ```bash
 cd /workspace/prime-rl
-bash scripts/tmux.sh        # launcher + logs panes
-# Launcher pane:
-uv run inference --model.name meta-llama/Llama-3.1-8B &
-# edit max_steps = 5 in .../configs/rl/swyperloom.toml for the smoke
-uv run rl @ /workspace/simulabra/environments/swyperloom/configs/rl/swyperloom.toml
+bash scripts/tmux.sh
+
+# Launcher pane — 5-step smoke:
+uv run rl @ /workspace/simulabra/environments/swyperloom/configs/rl/swyperloom.toml \
+  --tokenizer.chat_template /workspace/simulabra/environments/swyperloom/templates/completion.jinja \
+  --max_steps 5 \
+  --inference.gpu-memory-utilization 0.8
 ```
 
-Watch for: vLLM boots on the base model, rollouts produce non-empty
-text, judge JSON parses, reward distribution has variance.
+Watch for: vLLM boots on GPU 0 (Llama-3.1-8B base loads), trainer boots
+on GPU 1, rollouts produce non-empty text, judge JSON parses, reward
+distribution has variance. `cache_position` warnings at startup are
+harmless noise from prime-rl's vendored model classes.
 
 ## 6. Full run
 
-Restore `max_steps = 200` and relaunch. ~30-60 min on a 3090/4090 for a
-200-step LoRA-rank-16 run at batch 128.
+Drop the `--max_steps 5` override; the TOML's `max_steps = 200` takes
+over. ~30-60 min on 2× RTX 4090 at batch 128, rollouts_per_example 4,
+LoRA rank 16. Checkpoint every 100 steps (see `ckpt.interval = 100` in
+the TOML).
+
+```bash
+uv run rl @ /workspace/simulabra/environments/swyperloom/configs/rl/swyperloom.toml \
+  --tokenizer.chat_template /workspace/simulabra/environments/swyperloom/templates/completion.jinja \
+  --inference.gpu-memory-utilization 0.8
+```
 
 ## 7. Merge LoRA + GGUF export + push to HF Hub
 
