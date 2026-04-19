@@ -18,5 +18,8 @@ uv.lock
 # Co-located prime-rl checkout (tracks its own git)
 prime-rl/
 
+# Unsloth's generated trainer cache
+unsloth_compiled_cache/
+
 # Lab tooling scratch
 outputs/
