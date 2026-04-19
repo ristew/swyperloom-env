@@ -82,7 +82,9 @@ uv pip install --python .venv-unsloth/bin/python \
 (`trl<0.20` avoids a hard-import of `llm_blender` that has no working
 PyPI release against modern transformers.)
 
-Then train:
+Then train — use **plain `python`**, not `uv run`, since `uv run` will
+try to reconcile `pyproject.toml`'s verifiers dep (pydantic≥2.11) with
+the unsloth stack (pydantic<2.11) and fail:
 
 ```bash
 source .venv-unsloth/bin/activate

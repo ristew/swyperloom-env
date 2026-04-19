@@ -19,24 +19,13 @@ release = [
     "huggingface_hub>=0.24",
     "torch",
 ]
-# Single-GPU local training via Unsloth + TRL's GRPOTrainer — a
-# lighter alternative to the prime-rl two-pane setup. Use with
-# `uv run python train_unsloth.py`.
-# unsloth_zoo requires the 1.x huggingface_hub API, which clashes
-# with verifiers' 0.x pin — so install the train extra into a
-# *separate* venv from the base env if you hit conflicts.
-train = [
-    "unsloth",
-    # TRL 0.20+ hard-imports llm_blender which has no working PyPI
-    # release that's compatible with modern transformers. Pin to <0.20.
-    "trl>=0.15,<0.20",
-    "peft>=0.10",
-    "huggingface_hub>=1.5.0,<2",
-    "transformers>=4.48",
-    "vllm",
-    "mergekit",
-    "torch",
-]
+# NOTE: the training deps (unsloth / trl / vllm / mergekit) are NOT
+# declared here as a `[train]` extra because their pydantic pins
+# conflict with verifiers' pydantic>=2.11 requirement, breaking
+# `uv run` resolution for anyone who installs `.[train]` in the same
+# venv as the base env. Install them manually in a separate
+# `.venv-unsloth/` — see the README "Training" section for the exact
+# one-liner.
 
 [build-system]
 requires = ["hatchling"]
