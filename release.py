@@ -93,7 +93,7 @@ def push_to_hub(
 def main() -> int:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--adapter", required=True, type=Path, help="LoRA checkpoint directory (e.g. outputs/step_200)")
-    p.add_argument("--base", default="meta-llama/Llama-3.1-8B", help="Base model HF id")
+    p.add_argument("--base", default="unsloth/Meta-Llama-3.1-8B", help="Base model HF id")
     p.add_argument("--repo-id", required=True, help="Destination HF repo, e.g. 'your-user/swyperloom-llama31-8b'")
     p.add_argument("--quant", default="q4_k_m", help="GGUF quantization (q4_k_m, q5_k_m, q8_0, f16, ...)")
     p.add_argument("--llama-cpp", type=Path, default=Path("llama.cpp"), help="Path to llama.cpp checkout")
