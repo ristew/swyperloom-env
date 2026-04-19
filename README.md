@@ -61,23 +61,51 @@ product, so it's only available during training (prime-rl pulls the
 weights from HF directly). The smoke eval just confirms rollouts
 round-trip and the judge parses.
 
-## Training (self-managed on a Prime pod)
+## Training (self-managed prime-rl)
 
-Llama-3.1-8B base is not in Prime Hosted Training's model catalog, so we
-rent a raw Prime pod and run `prime-rl` ourselves. Same billing pool as
-the rest of Prime.
+Llama base models aren't in Prime Hosted Training's catalog, so we use
+`prime-rl` self-managed — same library that backs the hosted service,
+but run against a GPU you control (your machine for 1B dry-runs, a
+Prime pod for the 8B run).
+
+This follows the reverse-text example pattern from prime-rl:
+https://github.com/PrimeIntellect-ai/prime-rl/blob/main/examples/reverse_text/README.md
+
+### One-time: clone prime-rl next to this repo
 
 ```bash
-prime pods create                 # interactive: pick 24GB+ GPU, CUDA image
-prime pods ssh <pod-id>
-# on the pod:
-cd /workspace/simulabra/environments/swyperloom
-uv pip install -e . && uv pip install prime-rl
-uv run prime-rl @configs/rl/swyperloom.toml
+# wherever you keep code, e.g. ~/projects
+git clone https://github.com/PrimeIntellect-ai/prime-rl
+cd prime-rl
+bash scripts/install.sh      # installs uv, syncs venv
 ```
 
-See `PRIME_POD.md` for the full runbook (availability check, secrets,
-5-step smoke, LoRA merge, GGUF export, pod cleanup).
+### Wire swyperloom into that prime-rl checkout
+
+From **this** env's dir:
+
+```bash
+scripts/install-into-prime-rl.sh ~/projects/prime-rl
+```
+
+That's a thin wrapper around `cd prime-rl && uv pip install -e /path/to/swyperloom`.
+
+### Local dry-run (Llama-3.2-1B, your GPU)
+
+```bash
+cd ~/projects/prime-rl
+bash scripts/tmux.sh                                              # opens launcher + logs panes
+export PRIME_API_KEY=...  HF_TOKEN=...
+uv run inference --model.name meta-llama/Llama-3.2-1B &           # vLLM on :8000
+uv run rl @ ~/projects/simulabra/environments/swyperloom/configs/rl/swyperloom-1b.toml
+```
+
+### Pod run (Llama-3.1-8B, 24GB+ GPU)
+
+See `PRIME_POD.md` for the full runbook (Prime pod rental,
+secrets.env, 5-step smoke, LoRA merge, GGUF export, pod cleanup).
+Same commands as above but with `swyperloom.toml` instead of
+`swyperloom-1b.toml`.
 
 ## Environment arguments
 

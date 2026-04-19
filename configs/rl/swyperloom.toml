@@ -1,32 +1,34 @@
-model = "meta-llama/Llama-3.1-8B"
+# Pod prime-rl config for Llama-3.1-8B base. Native prime-rl schema
+# (same as `examples/*/rl.toml` in the prime-rl repo). Launch with
+# `uv run rl @ configs/rl/swyperloom.toml` from inside a prime-rl checkout
+# that has this env installed via `uv pip install -e /path/to/this/dir`.
+
 max_steps = 200
+seq_len = 512
+
+[model]
+name = "meta-llama/Llama-3.1-8B"
+
+[orchestrator]
 batch_size = 128
 rollouts_per_example = 4
-# learning_rate = 1e-4
-# lora_alpha = 16
-# oversampling_factor = 2.0
-# max_async_level = 2
-env_file = ["../../secrets.env"]  # PRIME_API_KEY (judge) + HF_TOKEN (Llama). Resolved relative to this TOML.
 
-[sampling]
+[orchestrator.sampling]
 max_tokens = 12
 temperature = 0.9
 
-[[env]]
+[[orchestrator.env]]
 id = "swyperloom"
 
-# W&B is off by default. To enable:
-#   1. add WANDB_API_KEY=... to secrets.env
-#   2. uncomment the [wandb] block below.
-# [wandb]
-# project = "swyperloom"
-# name = "llama31-8b-base-grpo"
+[trainer.model.lora]
+rank = 16
+alpha = 32.0
+dropout = 0.05
+target_modules = ["q_proj", "k_proj", "v_proj", "o_proj"]
 
-# Optional online eval every 50 steps
-# [eval]
-# interval = 50
-# num_examples = 32
-# rollouts_per_example = 4
-#
-# [[eval.env]]
-# id = "swyperloom"
+[trainer.optim]
+lr = 1e-4
+
+[ckpt]
+
+[inference]
