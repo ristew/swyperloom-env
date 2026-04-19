@@ -19,6 +19,15 @@ release = [
     "huggingface_hub>=0.24",
     "torch",
 ]
+# Single-GPU local training via Unsloth + TRL's GRPOTrainer — a
+# lighter alternative to the prime-rl two-pane setup. Use with
+# `uv run python train_unsloth.py`.
+train = [
+    "unsloth",
+    "trl>=0.10",
+    "peft>=0.10",
+    "torch",
+]
 
 [build-system]
 requires = ["hatchling"]

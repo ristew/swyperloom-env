@@ -61,7 +61,26 @@ product, so it's only available during training (prime-rl pulls the
 weights from HF directly). The smoke eval just confirms rollouts
 round-trip and the judge parses.
 
-## Training (self-managed prime-rl)
+## Training (Unsloth + TRL, single GPU) — default path
+
+One script, one GPU, no pod rental. Unsloth handles the fast LoRA
+adapter + colocated vLLM rollouts; TRL's GRPOTrainer drives the GRPO
+loop; our existing `SwyperloomJudgeRubric` is wrapped as a plain
+Python reward function (still calling Kimi K2 via Prime Inference).
+
+```bash
+uv pip install -e ".[train]"
+export PRIME_API_KEY=...
+
+uv run python train_unsloth.py              # SmolLM2-360M, 1000 steps
+# or with knobs:
+uv run python train_unsloth.py --model meta-llama/Llama-3.2-1B --max-steps 500
+```
+
+After training, release with `release.py` as usual. Adapter lives at
+`outputs/swyperloom-unsloth/checkpoint-<step>/`.
+
+## Training (self-managed prime-rl) — alternate path
 
 Llama base models aren't in Prime Hosted Training's catalog, so we use
 `prime-rl` self-managed — same library that backs the hosted service,
