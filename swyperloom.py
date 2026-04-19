@@ -25,6 +25,10 @@ from openai import AsyncOpenAI
 
 _STORIES_FILE = Path(__file__).parent / "cc-stories-short.txt"
 _MIN_WORDS = 15  # 4-word min prefix + 10-word min tail
+# Cap the prefix at ~380 words ≈ 490 tokens at the English-prose ratio
+# (~1.3 tok/word), leaving room under seq_len=512 for the 12-token
+# completion plus a small tokenizer slack. Tune if you bump seq_len.
+_MAX_PREFIX_WORDS = 380
 # Moonshot's K2.5 is reasoning-by-default: it narrates its thinking into
 # `content` and exhausts any reasonable max_tokens before it ever reaches
 # the JSON answer, even with response_format={"type":"json_object"}. We
@@ -81,7 +85,8 @@ def _build_dataset(stories: list[list[str]], seed: int) -> Dataset:
     rng = random.Random(seed)
     rows = []
     for story_idx, words in enumerate(stories):
-        n_words = rng.randint(4, len(words) - 10)
+        upper = min(len(words) - 10, _MAX_PREFIX_WORDS)
+        n_words = rng.randint(4, upper)
         prefix = " ".join(words[:n_words])
         rows.append({"prompt": prefix, "info": {"story_idx": story_idx, "n_words": n_words}})
     return Dataset.from_list(rows)

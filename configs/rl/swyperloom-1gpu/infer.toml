@@ -7,4 +7,6 @@
 [model]
 name = "HuggingFaceTB/SmolLM2-360M"
 max_model_len = 1024
-chat_template = "../templates/completion.jinja"
+# chat_template is set at the shared [tokenizer] level via
+# `--tokenizer.chat_template` on the launch command, so that inference,
+# orchestrator, and trainer all agree on the same template.
