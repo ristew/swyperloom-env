@@ -68,17 +68,32 @@ adapter + colocated vLLM rollouts; TRL's GRPOTrainer drives the GRPO
 loop; our existing `SwyperloomJudgeRubric` is wrapped as a plain
 Python reward function (still calling Kimi K2 via Prime Inference).
 
+**Separate venv required** — Unsloth needs `huggingface_hub>=1.5.0`
+which conflicts with verifiers' `<1` pin. One-time setup:
+
 ```bash
-uv pip install -e ".[train]"
+uv venv .venv-unsloth --python 3.12
+source .venv-unsloth/bin/activate
+pip install "unsloth" "trl>=0.10" "peft>=0.10" \
+            "huggingface_hub>=1.5.0,<2" "transformers>=4.48" \
+            "datasets>=2.19" "openai>=1.40"
+```
+
+Then train:
+
+```bash
+source .venv-unsloth/bin/activate
 export PRIME_API_KEY=...
 
-uv run python train_unsloth.py              # SmolLM2-360M, 1000 steps
+python train_unsloth.py                       # SmolLM2-360M, 1000 steps
 # or with knobs:
-uv run python train_unsloth.py --model meta-llama/Llama-3.2-1B --max-steps 500
+python train_unsloth.py --model meta-llama/Llama-3.2-1B --max-steps 500
 ```
 
 After training, release with `release.py` as usual. Adapter lives at
-`outputs/swyperloom-unsloth/checkpoint-<step>/`.
+`outputs/swyperloom-unsloth/checkpoint-<step>/`. `.venv/` stays the
+verifiers-compatible env for `prime eval run`; `.venv-unsloth/` is the
+training-only env.
 
 ## Training (self-managed prime-rl) — alternate path
 

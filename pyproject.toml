@@ -22,10 +22,15 @@ release = [
 # Single-GPU local training via Unsloth + TRL's GRPOTrainer — a
 # lighter alternative to the prime-rl two-pane setup. Use with
 # `uv run python train_unsloth.py`.
+# unsloth_zoo requires the 1.x huggingface_hub API, which clashes
+# with verifiers' 0.x pin — so install the train extra into a
+# *separate* venv from the base env if you hit conflicts.
 train = [
     "unsloth",
     "trl>=0.10",
     "peft>=0.10",
+    "huggingface_hub>=1.5.0,<2",
+    "transformers>=4.48",
     "torch",
 ]
 

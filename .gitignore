@@ -10,6 +10,7 @@ cc-stories.txt
 __pycache__/
 *.pyc
 .venv/
+.venv-unsloth/
 dist/
 *.egg-info/
 uv.lock
