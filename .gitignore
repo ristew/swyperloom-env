@@ -1,0 +1,17 @@
+secrets.env
+.env
+.env.*
+!.env.example
+
+# Full cc-stories corpus (854MB) — only the short version is used by the env
+cc-stories.txt
+
+# Python / uv build artifacts
+__pycache__/
+*.pyc
+.venv/
+dist/
+*.egg-info/
+
+# Lab tooling scratch
+outputs/

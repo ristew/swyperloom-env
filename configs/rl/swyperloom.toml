@@ -1,0 +1,32 @@
+model = "meta-llama/Llama-3.1-8B"
+max_steps = 200
+batch_size = 128
+rollouts_per_example = 4
+# learning_rate = 1e-4
+# lora_alpha = 16
+# oversampling_factor = 2.0
+# max_async_level = 2
+env_file = ["../../secrets.env"]  # PRIME_API_KEY (judge) + HF_TOKEN (Llama). Resolved relative to this TOML.
+
+[sampling]
+max_tokens = 12
+temperature = 0.9
+
+[[env]]
+id = "swyperloom"
+
+# W&B is off by default. To enable:
+#   1. add WANDB_API_KEY=... to secrets.env
+#   2. uncomment the [wandb] block below.
+# [wandb]
+# project = "swyperloom"
+# name = "llama31-8b-base-grpo"
+
+# Optional online eval every 50 steps
+# [eval]
+# interval = 50
+# num_examples = 32
+# rollouts_per_example = 4
+#
+# [[eval.env]]
+# id = "swyperloom"
