@@ -1,0 +1,36 @@
+# 360M local smoke-test config. SmolLM2-360M is ungated, open-weight,
+# and small enough to run the whole GRPO loop on a modest GPU (or even
+# CPU in a pinch). Downloads in seconds on a reasonable connection.
+#
+# Launch via:
+#   cd prime-rl && uv run rl @ <path>/configs/rl/swyperloom-tiny.toml
+
+max_steps = 20
+seq_len = 512
+
+[model]
+name = "HuggingFaceTB/SmolLM2-360M"
+
+[orchestrator]
+batch_size = 16
+rollouts_per_example = 4
+
+[orchestrator.sampling]
+max_tokens = 12
+temperature = 0.9
+
+[[orchestrator.env]]
+id = "swyperloom"
+
+[trainer.model.lora]
+rank = 16
+alpha = 32.0
+dropout = 0.05
+target_modules = ["q_proj", "k_proj", "v_proj", "o_proj"]
+
+[trainer.optim]
+lr = 1e-4
+
+[ckpt]
+
+[inference]
