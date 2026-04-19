@@ -1,0 +1,10 @@
+{#-
+  Passthrough chat template for base models (no role framing, no system
+  prompts). Emits the concatenated content of all messages verbatim, so
+  the /v1/chat/completions endpoint behaves like /v1/completions.
+  Required when the policy model (SmolLM2, Llama-3.x base, etc.) ships
+  with no chat_template in its tokenizer config.
+-#}
+{%- for message in messages -%}
+{{- message['content'] -}}
+{%- endfor -%}
