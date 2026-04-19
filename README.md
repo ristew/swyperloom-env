@@ -73,11 +73,14 @@ which conflicts with verifiers' `<1` pin. One-time setup:
 
 ```bash
 uv venv .venv-unsloth --python 3.12
-source .venv-unsloth/bin/activate
-pip install "unsloth" "trl>=0.10" "peft>=0.10" \
-            "huggingface_hub>=1.5.0,<2" "transformers>=4.48" \
-            "datasets>=2.19" "openai>=1.40"
+uv pip install --python .venv-unsloth/bin/python \
+  "unsloth" "trl>=0.15,<0.20" "peft>=0.10" \
+  "huggingface_hub>=1.5.0,<2" "transformers>=4.48" \
+  "datasets>=2.19" "openai>=1.40" "vllm" "mergekit"
 ```
+
+(`trl<0.20` avoids a hard-import of `llm_blender` that has no working
+PyPI release against modern transformers.)
 
 Then train:
 

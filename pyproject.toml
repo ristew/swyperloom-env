@@ -27,10 +27,14 @@ release = [
 # *separate* venv from the base env if you hit conflicts.
 train = [
     "unsloth",
-    "trl>=0.10",
+    # TRL 0.20+ hard-imports llm_blender which has no working PyPI
+    # release that's compatible with modern transformers. Pin to <0.20.
+    "trl>=0.15,<0.20",
     "peft>=0.10",
     "huggingface_hub>=1.5.0,<2",
     "transformers>=4.48",
+    "vllm",
+    "mergekit",
     "torch",
 ]
 
