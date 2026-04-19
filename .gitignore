@@ -12,6 +12,10 @@ __pycache__/
 .venv/
 dist/
 *.egg-info/
+uv.lock
+
+# Co-located prime-rl checkout (tracks its own git)
+prime-rl/
 
 # Lab tooling scratch
 outputs/
