@@ -1,0 +1,21 @@
+# Orchestrator config for the single-GPU colocated run.
+# Rollouts + reward scoring; talks to the vLLM inference server on :8000
+# and the swyperloom env (judge calls Kimi K2 via Prime Inference).
+
+max_steps = 1000
+batch_size = 16
+rollouts_per_example = 4
+seq_len = 512
+
+[model]
+name = "HuggingFaceTB/SmolLM2-360M"
+
+[train.sampling]
+max_completion_tokens = 12
+temperature = 0.9
+
+[[train.env]]
+id = "swyperloom"
+
+[ckpt]
+interval = 100

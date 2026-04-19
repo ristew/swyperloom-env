@@ -1,0 +1,21 @@
+# Trainer config for the single-GPU colocated run. LoRA on
+# SmolLM2-360M; checkpoints every 100 steps so an overnight crash at
+# step 847 loses ≤ 100 steps of work.
+
+max_steps = 1000
+
+[model]
+name = "HuggingFaceTB/SmolLM2-360M"
+seq_len = 512
+
+[model.lora]
+rank = 16
+alpha = 32.0
+dropout = 0.05
+target_modules = ["q_proj", "k_proj", "v_proj", "o_proj"]
+
+[optim]
+lr = 1e-4
+
+[ckpt]
+interval = 100

@@ -1,0 +1,10 @@
+# Inference-server config for the single-GPU colocated run.
+# Combined with orch.toml + train.toml via:
+#   uv run rl --inference @ .../infer.toml --orchestrator @ .../orch.toml \
+#             --trainer @ .../train.toml --trainer-gpu-ids 0 \
+#             --inference-gpu-ids 0 --inference.gpu-memory-utilization 0.5
+
+[model]
+name = "HuggingFaceTB/SmolLM2-360M"
+max_model_len = 1024
+chat_template = "../templates/completion.jinja"
