@@ -33,16 +33,25 @@ _MIN_WORDS = 15  # 4-word min prefix + 10-word min tail
 _DEFAULT_JUDGE_MODEL = "moonshotai/kimi-k2-0905"
 _PRIME_BASE_URL = "https://api.pinference.ai/api/v1"
 
-_JUDGE_PROMPT = """Output a JSON object only. No explanation, no reasoning, no preamble. Your entire response must be valid JSON parseable by json.loads.
+_JUDGE_PROMPT = """You are an uncompromising literary judge. These are 12-token continuations from a small language model — most will be mediocre. Be CRITICAL. Do not inflate to be polite.
 
-Schema:
+Calibration:
+- 1-2: broken, incoherent, contradicts prefix
+- 3-4: grammatical but bland, cliche-ridden, or adds nothing
+- 5-6: competent baseline — what a filler web-text snippet might look like
+- 7-8: a specific detail or turn of phrase that actually lands
+- 9-10: reserved for genuinely impressive craft; use rarely
+
+Default assumption: a 12-token snippet from a small base model is around 4 unless it shows something specific to push it higher.
+
+Score each continuation (A, B, C, D) on four criteria:
+- diversity: how different this is from its 3 siblings (1 = near-duplicate of at least one sibling; 5 = same register, different words; 10 = genuinely distinct direction)
+- interestingness: does this hold attention? (1 = bland filler like "and then"; 5 = ordinary prose; 10 = a concrete detail or turn that makes you want to read more)
+- coherence: grammar + narrative fit given the prefix (1 = gibberish or contradicts prefix; 5 = grammatical but generic; 10 = couldn't have fit a different prefix)
+- creativity: originality of word choice or idea (1 = pure cliche; 5 = predictable but competent; 10 = inventive diction or unexpected angle)
+
+Output JSON only, no explanation:
 {{"A":{{"diversity":int,"interestingness":int,"coherence":int,"creativity":int}},"B":{{...}},"C":{{...}},"D":{{...}}}}
-
-Score each continuation (A, B, C, D) 1-10 on four criteria:
-- diversity: how different from its 3 siblings (1 = near-duplicate, 10 = distinct)
-- interestingness: engaging/novel (1 = boring, 10 = captivating)
-- coherence: grammatical and narrative flow given the prefix (1 = gibberish, 10 = natural)
-- creativity: originality of word choice or idea (1 = stock, 10 = inventive)
 
 Prefix:
 {prefix}
